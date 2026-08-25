@@ -26,52 +26,40 @@ let mongoUrlLocal = "mongodb://admin:password@localhost:27017";
 // use when starting application as docker container, part of docker-compose
 let mongoUrlDockerCompose = "mongodb://admin:password@mongodb";
 
-// pass these options to mongo client connect request to avoid DeprecationWarning for current Server Discovery and Monitoring engine
-let mongoClientOptions = { useNewUrlParser: true, useUnifiedTopology: true };
-
 // "user-account" in demo with docker
 let databaseName = "user-account";
 let collectionName = "users";
 
-app.get('/get-profile', function (req, res) {
+app.get('/get-profile', async function (req, res) {
   let response = {};
   // Connect to the db using local application or docker compose variable in connection properties
-  MongoClient.connect(mongoUrlLocal, mongoClientOptions, function (err, client) {
-    if (err) throw err;
+  let client = await MongoClient.connect(mongoUrlLocal);
 
-    let db = client.db(databaseName);
+  let db = client.db(databaseName);
 
-    let myquery = { userid: 1 };
+  let myquery = { userid: 1 };
 
-    db.collection(collectionName).findOne(myquery, function (err, result) {
-      if (err) throw err;
-      response = result;
-      client.close();
+  response = await db.collection(collectionName).findOne(myquery);
+  await client.close();
 
-      // Send response
-      res.send(response ? response : {});
-    });
-  });
+  // Send response
+  res.send(response ? response : {});
 });
 
-app.post('/update-profile', function (req, res) {
+app.post('/update-profile', async function (req, res) {
   let userObj = req.body;
   // Connect to the db using local application or docker compose variable in connection properties
-  MongoClient.connect(mongoUrlLocal, mongoClientOptions, function (err, client) {
-    if (err) throw err;
+  let client = await MongoClient.connect(mongoUrlLocal);
 
-    let db = client.db(databaseName);
-    userObj['userid'] = 1;
+  let db = client.db(databaseName);
+  userObj['userid'] = 1;
 
-    let myquery = { userid: 1 };
-    let newvalues = { $set: userObj };
+  let myquery = { userid: 1 };
+  let newvalues = { $set: userObj };
 
-    db.collection(collectionName).updateOne(myquery, newvalues, {upsert: true}, function(err, res) {
-      if (err) throw err;
-      client.close();
-    });
+  await db.collection(collectionName).updateOne(myquery, newvalues, {upsert: true});
+  await client.close();
 
-  });
   // Send response
   res.send(userObj);
 });
@@ -79,4 +67,3 @@ app.post('/update-profile', function (req, res) {
 app.listen(3000, function () {
   console.log("app listening on port 3000!");
 });
-
