@@ -33,7 +33,7 @@ let collectionName = "users";
 app.get('/get-profile', async function (req, res) {
   let response = {};
   // Connect to the db using local application or docker compose variable in connection properties
-  let client = await MongoClient.connect(mongoUrlLocal);
+  let client = await MongoClient.connect(mongoUrlDockerCompose);
 
   let db = client.db(databaseName);
 
@@ -49,7 +49,7 @@ app.get('/get-profile', async function (req, res) {
 app.post('/update-profile', async function (req, res) {
   let userObj = req.body;
   // Connect to the db using local application or docker compose variable in connection properties
-  let client = await MongoClient.connect(mongoUrlLocal);
+  let client = await MongoClient.connect(mongoUrlDockerCompose);
 
   let db = client.db(databaseName);
   userObj['userid'] = 1;

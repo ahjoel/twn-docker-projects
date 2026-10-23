@@ -1,44 +1,144 @@
+<!DOCTYPE html>
 <html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Profile</title>
 <style>
-    .container {
-        margin: 40px auto;
-        width: 80%;
+    :root {
+        --bg: #f4f5f7;
+        --card: #ffffff;
+        --text: #1d2330;
+        --muted: #6b7280;
+        --border: #e5e7eb;
+        --accent: #4f46e5;
+        --accent-hover: #4338ca;
+        --accent-soft: #eef2ff;
+        --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
     }
-    .button {
-        width: 160px;
-        height: 45px;
-        border-radius: 6px;
-        font-size: 15px;
-        margin-top: 20px;
+    * {
+        box-sizing: border-box;
+    }
+    body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px 16px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.5;
+    }
+    .container {
+        width: 100%;
+        max-width: 420px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+    .cover {
+        height: 96px;
+        background: linear-gradient(135deg, var(--accent), #06b6d4);
+    }
+    .content {
+        padding: 0 28px 28px;
+        text-align: center;
     }
     img {
-        width: 328px;
-        height: 287px;
-        display: block;
-        margin-bottom: 20px;
-    }
-    hr {
-        width: 400px;
-        margin-left: 0;
-    }
-    h3 {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid var(--card);
+        margin-top: -60px;
+        background: var(--border);
         display: inline-block;
+    }
+    h1 {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 12px 0 20px;
+    }
+    .fields {
+        text-align: left;
+        border-top: 1px solid var(--border);
+    }
+    .field {
+        padding: 14px 0;
+        border-bottom: 1px solid var(--border);
+    }
+    .field span,
+    .field label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+        margin-bottom: 4px;
+    }
+    .field h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 500;
+        word-break: break-word;
+    }
+    .field input {
+        width: 100%;
+        height: 40px;
+        padding: 0 12px;
+        font-size: 15px;
+        color: var(--text);
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        outline: none;
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .field input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 24px;
+    }
+    .button {
+        flex: 1;
+        height: 44px;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        background: var(--accent);
+        color: #fff;
+        transition: background 0.15s;
+    }
+    .button:hover {
+        background: var(--accent-hover);
+    }
+    .button.secondary {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--border);
+    }
+    .button.secondary:hover {
+        background: var(--bg);
     }
     #container {
         display: none;
     }
     #container-edit {
         display: none;
-    }
-    #container-edit input {
-        height: 32px;
-    }
-    #container-edit hr {
-        margin: 25px 0;
-    }
-    #container-edit input {
-        width: 195px;
-        font-size: 15px;
     }
 </style>
 <script>
@@ -61,11 +161,11 @@
         const cont = document.getElementById('container');
 
         const payload = {
-            name: document.getElementById('input-name').value, 
-            email: document.getElementById('input-email').value, 
+            name: document.getElementById('input-name').value,
+            email: document.getElementById('input-email').value,
             interests: document.getElementById('input-interests').value
         };
-        
+
         const response = await fetch('http://localhost:3000/update-profile', {
             method: "POST",
             headers: {
@@ -95,29 +195,44 @@
         cont.style.display = 'none';
         contEdit.style.display = 'block';
     }
+
+    function cancelUpdate() {
+        document.getElementById('container-edit').style.display = 'none';
+        document.getElementById('container').style.display = 'block';
+    }
 </script>
+</head>
 <body>
     <div class='container' id='container'>
-        <h1>User profile</h1>
-        <img src='profile-picture' alt="user-profile">
-        <span>Name: </span><h3 id='name'>Anna Smith</h3>
-        <hr />
-        <span>Email: </span><h3 id='email'>anna.smith@example.com</h3>
-        <hr />
-        <span>Interests: </span><h3 id='interests'>coding</h3>
-        <hr />
-        <button class='button' onclick="updateProfile()">Edit Profile</button>
+        <div class='cover'></div>
+        <div class='content'>
+            <img src='profile-picture' alt="user-profile">
+            <h1>User profile</h1>
+            <div class='fields'>
+                <div class='field'><span>Name</span><h3 id='name'>Anna Smith</h3></div>
+                <div class='field'><span>Email</span><h3 id='email'>anna.smith@example.com</h3></div>
+                <div class='field'><span>Interests</span><h3 id='interests'>coding</h3></div>
+            </div>
+            <div class='actions'>
+                <button class='button' onclick="updateProfile()">Edit Profile</button>
+            </div>
+        </div>
     </div>
     <div class='container' id='container-edit'>
-        <h1>User profile</h1>
-        <img src='profile-picture' alt="user-profile">
-        <span>Name: </span><label for='input-name'></label><input type="text" id='input-name' value='Anna Smith' />
-        <hr />
-        <span>Email: </span><label for='input-email'></label><input type="email" id='input-email' value='anna.smith@example.com' />
-        <hr />
-        <span>Interests: </span><label for='input-interests'></label><input type="text" id='input-interests' value='coding' />
-        <hr />
-        <button class='button' onclick="handleUpdateProfileRequest()">Update Profile</button>
+        <div class='cover'></div>
+        <div class='content'>
+            <img src='profile-picture' alt="user-profile">
+            <h1>Edit profile</h1>
+            <div class='fields'>
+                <div class='field'><label for='input-name'>Name</label><input type="text" id='input-name' value='Anna Smith' /></div>
+                <div class='field'><label for='input-email'>Email</label><input type="email" id='input-email' value='anna.smith@example.com' /></div>
+                <div class='field'><label for='input-interests'>Interests</label><input type="text" id='input-interests' value='coding' /></div>
+            </div>
+            <div class='actions'>
+                <button class='button secondary' onclick="cancelUpdate()">Cancel</button>
+                <button class='button' onclick="handleUpdateProfileRequest()">Update Profile</button>
+            </div>
+        </div>
     </div>
 </body>
 </html>
